@@ -11,17 +11,18 @@
 }
 #participant-container {
   text-align: center;
+  position: relative;
   margin-bottom: 20px;
 }
 
 #roulette-container::after {
-  content: "▲";
+  content: "";
   position: absolute;
-  top: calc(50%); /* 삼각형을 원형 위로 이동 */
-  left: 50%;
-  transform: translateX(-50%);
+  top: 410px;
   font-size: 30px;
-  color: black;
+  width: 30px;
+  height: 30px;
+  background: url("./triangle.svg") center/contain no-repeat;
 }
 
 #spin,

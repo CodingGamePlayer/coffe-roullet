@@ -11,7 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let participants = [];
   let colors = [];
   let angle = 0;
+  let spinSpeed = 1000; // 회전 속도 변수
   let isSpinning = false;
+  let isStopping = false; // 스핀 멈추기 시작했는지 표시하는 변수
   let animationFrameId;
 
   const tech_7_member = [
@@ -47,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     participants.push({ name, weight, color: colors[colors.length - 1] });
 
+    console.log(participants);
     drawRoulette(name);
   };
 
@@ -59,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //   participantWeightInput.value = "";
   // });
 
-  removeParticipant = (name) => {
+  const removeParticipant = (name) => {
     const index = participants.findIndex((p) => p.name === name);
 
     if (index !== -1) {
@@ -133,12 +136,46 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.restore();
   };
 
-  let spinSpeed = 1000; // 회전 속도 변수
-  let isStopping = false; // 스핀 멈추기 시작했는지 표시하는 변수
+  const getCurrentRouletteSection = (currentAngle) => {
+    // 참여자의 weight 합을 구함
+    const totalWeight = participants.reduce((acc, p) => acc + p.weight, 0);
+    console.log("totalWeight: ", totalWeight);
+
+    // 현재 각도를 0에서 2π 사이로 변환
+    currentAngle =
+      ((currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
+    let startAngle = Math.PI / 2;
+    console.log(currentAngle);
+
+    for (let i = participants.length - 1; i >= 0; i--) {
+      // 각 참여자의 weight 비율을 이용하여 섹션의 크기를 동적으로 조정
+      const sectionAngle = (2 * Math.PI * participants[i].weight) / totalWeight;
+      const endAngle = startAngle + sectionAngle;
+
+      // 현재 각도가 현재 섹션에 속하는지 확인
+      if (currentAngle >= startAngle && currentAngle < endAngle) {
+        console.log(currentAngle, startAngle, endAngle);
+        console.log(participants[i]);
+        console.log(participants);
+        return i; // 섹션 인덱스 반환
+      }
+
+      startAngle = endAngle;
+    }
+
+    if (currentAngle >= startAngle || currentAngle < Math.PI / 2) {
+      console.log(currentAngle, startAngle, Math.PI / 2);
+      console.log(participants[0]);
+      console.log(participants);
+      return 0; // 첫 번째 섹션 인덱스 반환
+    }
+
+    return null; // 섹션을 찾지 못한 경우
+  };
 
   const spinRoulette = () => {
     if (isStopping && spinSpeed <= 0) {
-      spinSpeed = 0;
       isStopping = false;
       isSpinning = false; // 스핀을 다시 시작할 수 있도록 상태 변경
       spinButton.textContent = "Spin";
@@ -148,10 +185,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 멈추기 시작했을 때만 속도 감소
     if (isStopping) {
-      document.querySelector("#spin").disabled = "true";
-      // document.querySelector("#spin").style.display = "none";
-      spinSpeed *= Math.random() * (0.995 - 0.99) + 0.99; // 스핀 속도 감소
-      console.log(spinSpeed);
+      spinButton.disabled = true;
+      spinSpeed *= Math.random() * (0.98 - 0.975) + 0.975; // 0.98에서 0.975 사이의 랜덤 감소 속도
+
+      console.log(getCurrentRouletteSection(angle));
+      if (spinSpeed <= 0.001) {
+        console.log("finished");
+        const currentSection = getCurrentRouletteSection(angle);
+
+        if (currentSection !== null) {
+          const winnerName = participants[currentSection].name;
+          alert(`Winner: ${winnerName}`);
+        } else {
+          alert("No winner found"); // 예외 처리: 섹션을 찾을 수 없을 경우
+        }
+
+        spinButton.disabled = false;
+        isSpinning = false;
+        isStopping = true;
+        spinSpeed = 0;
+        return;
+      }
       resetButton.style.display = "flex";
     }
 
@@ -161,8 +215,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   spinButton.addEventListener("click", () => {
     if (!isSpinning) {
-      spinSpeed = 0.5; // 초기 스핀 속도 설정
       isSpinning = true;
+      isStopping = false;
+      spinSpeed = 1000; // 현재 속도로 초기화 또는 적절한 값으로 설정
+
       spinButton.textContent = "Stop";
       requestAnimationFrame(spinRoulette);
     } else {
@@ -196,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
   drawRoulette();
 
   document.querySelector("#reset").addEventListener("click", () => {
-    // location.reload();
+    location.reload();
   });
 
   const tech_7_member_DOM = document.querySelector(".tech7-users");
@@ -204,26 +260,26 @@ document.addEventListener("DOMContentLoaded", () => {
   tech_7_member.forEach((name) => {
     const userBtn = `
         <div>
-        <input type="checkbox" id="${name}" />
-        <label for="${name}">
-          <span>${name}</span>
-          <span class="${name} ratio">1</span>
-          <button class="plus btn-sm">+</button>
-          <button class="minus btn-sm">-</button>
-        </label>
-      </div>
-    `;
+          <input type="checkbox" id="${name}" />
+          <label for="${name}">
+            <span>${name}</span>
+            <span class="${name} ratio">1</span>
+          </label>
+          <button class="plus btn btn-primary btn-sm">+</button>
+          <button class="minus btn btn-outline-primary btn-sm">-</button>
+        </div>
+      `;
     tech_7_member_DOM.innerHTML += userBtn;
   });
 
   document.querySelectorAll(".plus").forEach((element) => {
     element.addEventListener("click", (e) => {
-      const label = e.target.closest("label");
+      const label = e.target.closest("div").querySelector("label");
       const inputElement = label.previousElementSibling;
       const ratioElement = label.querySelector(".ratio");
 
       let currentRatio = parseInt(ratioElement.innerText, 10);
-      currentRatio = Math.min(currentRatio + 1, 10); // 최소값은 1으로 설정
+      currentRatio = Math.min(currentRatio + 1, 10); // 최댓값은 10으로 설정
       ratioElement.innerText = currentRatio.toString();
 
       removeParticipant(label.htmlFor);
@@ -233,9 +289,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll(".minus").forEach((element) => {
     element.addEventListener("click", (e) => {
-      const label = e.target.closest("label");
+      const label = e.target.closest("div").querySelector("label");
       const inputElement = label.previousElementSibling;
-
       const ratioElement = label.querySelector(".ratio");
 
       let currentRatio = parseInt(ratioElement.innerText, 10);
@@ -253,11 +308,9 @@ document.addEventListener("DOMContentLoaded", () => {
     memberDOM.addEventListener("click", (e) => {
       const memberRatioDOM = document.querySelector(`.${member}.ratio`);
 
-      if (e.target.checked) {
-        addParticipant(e.target.id, parseFloat(memberRatioDOM.innerText));
-      } else {
-        removeParticipant(e.target.id);
-      }
+      e.target.checked
+        ? addParticipant(e.target.id, parseFloat(memberRatioDOM.innerText))
+        : removeParticipant(e.target.id);
     });
   });
 });
