@@ -29,8 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
       name.trim() === "" ||
       weight <= 0 ||
       participants.some((p) => p.name === name)
-    )
+    ) {
       return;
+    }
+
     const existingParticipant = participants.find((p) => p.name === name);
 
     if (existingParticipant) {
@@ -146,8 +148,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 멈추기 시작했을 때만 속도 감소
     if (isStopping) {
-      document.querySelector("#spin").style.display = "none";
+      document.querySelector("#spin").disabled = "true";
+      // document.querySelector("#spin").style.display = "none";
       spinSpeed *= Math.random() * (0.995 - 0.99) + 0.99; // 스핀 속도 감소
+      console.log(spinSpeed);
       resetButton.style.display = "flex";
     }
 
@@ -237,6 +241,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.querySelector("#reset").addEventListener("click", () => {
-    location.reload();
+    // location.reload();
   });
 });
