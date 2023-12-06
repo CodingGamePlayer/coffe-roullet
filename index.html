@@ -8,20 +8,90 @@
   </head>
   <body>
     <div id="roulette-container">
-      <canvas id="roulette" width="500" height="500"></canvas>
+      <canvas id="roulette" width="350" height="350"></canvas>
     </div>
     <div id="participant-container">
-      <input type="text" id="participant-name" placeholder="참여자 이름" />
+      <!-- <input type="text" id="participant-name" placeholder="참여자 이름" />
       <input
         type="number"
         id="participant-weight"
         placeholder="가중치"
         min="1"
       />
-      <button id="add-participant">참여자 추가</button>
+      <button id="add-participant">참여자 추가</button> -->
+      <div>
+        <input type="checkbox" id="공영균" />
+        <label for="공영균">
+          <span>공영균</span>
+          <span class="공영균 ratio">1</span>
+          <button class="plus">+</button>
+          <button class="minus">-</button>
+        </label>
+      </div>
+      <div>
+        <input type="checkbox" id="김일진" />
+        <label for="김일진">
+          <span>김일진</span>
+          <span class="김일진 ratio">1</span>
+          <button class="plus">+</button>
+          <button class="minus">-</button>
+        </label>
+      </div>
+      <div>
+        <input type="checkbox" id="김인경" />
+        <label for="김인경">
+          <span>김인경</span>
+          <span class="김인경 ratio">1</span>
+          <button class="plus">+</button>
+          <button class="minus">-</button>
+        </label>
+      </div>
+      <div>
+        <input type="checkbox" id="김상훈" />
+        <label for="김상훈">
+          <span>김상훈</span>
+          <span class="김상훈 ratio">1</span>
+          <button class="plus">+</button>
+          <button class="minus">-</button>
+        </label>
+      </div>
+      <div>
+        <input type="checkbox" id="김동환" />
+        <label for="김동환">
+          <span>김동환</span>
+          <span class="김동환 ratio">1</span>
+          <button class="plus">+</button>
+          <button class="minus">-</button>
+        </label>
+      </div>
+      <div>
+        <input type="checkbox" id="김종식" />
+        <label for="김종식">
+          <span>김종식</span>
+          <span class="김종식 ratio">1</span>
+          <button class="plus">+</button>
+          <button class="minus">-</button>
+        </label>
+      </div>
+      <div>
+        <input type="checkbox" id="우창욱" />
+        <label for="우창욱">
+          <span>우창욱</span>
+          <span class="우창욱 ratio">1</span>
+          <button class="plus">+</button>
+          <button class="minus">-</button>
+        </label>
+      </div>
     </div>
 
     <button id="spin">Spin</button>
+
+    <button
+      id="reset"
+      style="display: none; justify-content: center; align-items: center"
+    >
+      다시하기
+    </button>
     <script src="script.js"></script>
   </body>
 </html>

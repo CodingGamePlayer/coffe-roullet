@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 500px;
 }
 
 #roulette {
@@ -17,14 +17,16 @@
 #roulette-container::after {
   content: "▲";
   position: absolute;
-  top: calc(78%); /* 삼각형을 원형 위로 이동 */
+  top: calc(50%); /* 삼각형을 원형 위로 이동 */
   left: 50%;
   transform: translateX(-50%);
   font-size: 30px;
   color: black;
 }
 
-#spin {
+#spin,
+#reset {
+  box-sizing: border-box;
   display: block;
   margin: 20px auto;
   padding: 10px 20px;
