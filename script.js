@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "김동환",
     "우창욱",
   ];
+  const tech_7_member_Weights = [1, 1, 1, 1, 1, 1, 1];
 
   const tech_7_member_profileImg = [
     true,
@@ -59,6 +60,20 @@ document.addEventListener("DOMContentLoaded", () => {
     true,
   ];
 
+  const participantModal = new bootstrap.Modal(
+    document.getElementById("tech-7-member-selection")
+  );
+
+  // Add an event listener for the hidden.bs.modal event
+  participantModal._element.addEventListener("hidden.bs.modal", function () {
+    // Execute your logic here when the participant selection modal is closed
+    tech_7_member.forEach((member) => removeParticipant(member));
+    tech_7_member.forEach((member, idx) =>
+      addParticipant(member, tech_7_member_Weights[idx])
+    );
+  });
+
+  // 참여자 추가하기
   const addParticipant = (name, weight) => {
     if (
       name.trim() === "" ||
@@ -91,15 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     drawRoulette(name);
   };
 
-  // addParticipantButton.addEventListener("click", () => {
-  //   addParticipant(
-  //     participantInput.value,
-  //     parseFloat(participantWeightInput.value)
-  //   );
-  //   participantInput.value = "";
-  //   participantWeightInput.value = "";
-  // });
-
+  // 참여자 제거하기
   const removeParticipant = (name) => {
     const index = participants.findIndex((p) => p.name === name);
 
@@ -194,7 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
         spinSpeed = 0;
         return;
       }
-      // resetButton.style.display = "flex";
     }
     updateRoulette();
     requestAnimationFrame(spinRoulette);
@@ -221,33 +227,8 @@ document.addEventListener("DOMContentLoaded", () => {
       spinButton.querySelector("span").innerText = "Spin";
     }
   });
-  // 엔터키 이벤트 추가
-  // participantInput.addEventListener("keypress", (e) => {
-  //   if (e.key === "Enter") {
-  //     addParticipant(
-  //       participantInput.value,
-  //       parseFloat(participantWeightInput.value)
-  //     );
-  //     participantInput.value = "";
-  //     participantWeightInput.value = "";
-  //   }
-  // });
 
-  // participantWeightInput.addEventListener("keypress", (e) => {
-  //   if (e.key === "Enter") {
-  //     addParticipant(
-  //       participantInput.value,
-  //       parseFloat(participantWeightInput.value)
-  //     );
-  //     participantInput.value = "";
-  //     participantWeightInput.value = "";
-  //   }
-  // });
   drawRoulette();
-
-  // document.querySelector("#reset").addEventListener("click", () => {
-  //   location.reload();
-  // });
 
   const tech_7_member_DOM = document.querySelector(".tech7-users");
 
@@ -263,7 +244,9 @@ document.addEventListener("DOMContentLoaded", () => {
               <span>${name}</span>
             </label>
           </td>
-          <td><span class="${name} ratio">1</span></td>
+          <td><span class="${name} ratio">${
+      tech_7_member_Weights[idx]
+    }</span></td>
           <td>
             <button class="plus btn btn-primary btn-sm">+</button>
             <button class="minus btn btn-outline-primary btn-sm">-</button>
@@ -273,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
     tech_7_member_DOM.innerHTML += userBtn;
   });
 
-  // 가중치 더하기
+  // 가중치 더하기 버튼
   document.querySelectorAll(".plus").forEach((element) => {
     element.addEventListener("click", (e) => {
       const weight = e.target.closest("td").previousElementSibling;
@@ -282,13 +265,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let currentRatio = parseFloat(ratioElement.innerText, 10);
       currentRatio = Math.min(currentRatio + 0.1, 10).toFixed(1); // 최댓값은 10으로 설정
-      ratioElement.innerText = currentRatio.toString();
 
-      removeParticipant(inputElement.id);
-      inputElement.checked = false;
+      const memberIdx = tech_7_member.findIndex(
+        (member) => member === inputElement.id
+      );
+
+      tech_7_member_Weights[memberIdx] = parseFloat(currentRatio);
+      ratioElement.innerText = currentRatio.toString();
     });
   });
 
+  // 가중치 줄이기 버튼
   document.querySelectorAll(".minus").forEach((element) => {
     element.addEventListener("click", (e) => {
       const weight = e.target.closest("td").previousElementSibling;
@@ -297,10 +284,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let currentRatio = parseFloat(ratioElement.innerText, 10);
       currentRatio = Math.max(currentRatio - 0.1, 1).toFixed(1); // 최소값은 1으로 설정
-      ratioElement.innerText = currentRatio.toString();
 
-      removeParticipant(inputElement.id);
-      inputElement.checked = false;
+      const memberIdx = tech_7_member.findIndex(
+        (member) => member === inputElement.id
+      );
+
+      tech_7_member_Weights[memberIdx] = parseFloat(currentRatio);
+      ratioElement.innerText = currentRatio.toString();
     });
   });
 
@@ -309,7 +299,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     memberDOM.addEventListener("click", (e) => {
       const memberRatioDOM = document.querySelector(`.${member}.ratio`);
-      console.log(memberRatioDOM);
 
       // 체크되어 있는 멤버면 추가
       e.target.checked
@@ -318,6 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // 당첨된 사람 결정하는 함수
   const getWinner = () => {
     const adjustedAngle =
       (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI); // 각도를 0에서 2π 사이 값으로 조정
@@ -334,6 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // 당첨자 출력하는 함수
   const displayWinner = (winnerName) => {
     // 당첨된 유저를 표시하는 코드 (예: 알림, DOM 요소 변경 등)
     // window.alert(`당첨자: ${winnerName}`);
@@ -347,7 +338,7 @@ document.addEventListener("DOMContentLoaded", () => {
     targetModal.click();
   };
 
-  // 전체 선택 버튼 클릭
+  // 전체 선택 버튼에 클릭 이벤트 바인딩
   selectorAllButton.addEventListener("click", () => {
     const tech7AllMemberDOM = document.querySelectorAll(".tech7");
 
