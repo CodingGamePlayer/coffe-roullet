@@ -9,6 +9,7 @@
 * {
   font-family: "Pretendard";
   font-weight: 600;
+  touch-action: manipulation;
 }
 
 #roulette-container {
