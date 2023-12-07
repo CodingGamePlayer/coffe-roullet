@@ -1,13 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("roulette");
   const ctx = canvas.getContext("2d");
-  const spinButton = document.getElementById("spin");
+  const spinButton = document.querySelector("#spin");
   // const participantInput = document.getElementById("participant-name");
   // const participantWeightInput = document.getElementById("participant-weight");
   // const addParticipantButton = document.getElementById("add-participant");
   // const resetButton = document.querySelector("#reset");
-  const selectorAllCheckbox = document.querySelector("#select-all");
-
+  const selectorAllButton = document.querySelector("#select-all");
   const targetModal = document.querySelector("#target-modal");
 
   const pastelColors = [
@@ -38,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let isStopping = false; // 스핀 멈추기 시작했는지 표시하는 변수
   let animationFrameId;
   let selectedColors = [];
+  let isSelectorAllClicked = false;
 
   const tech_7_member = [
     "공영균",
@@ -72,9 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (selectedColors[getColorIdx] === 1) {
       }
       selectedColors[getColorIdx] = 1;
-      const randomColor =
-        // "#" + Math.floor(Math.random() * 16777215).toString(16);
-        pastelColors[Math.floor(Math.random() * 16)];
+      const randomColor = pastelColors[Math.floor(Math.random() * 16)];
       colors.push(randomColor);
     }
 
@@ -169,14 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const spinRoulette = () => {
-    if (isStopping && spinSpeed <= 0) {
-      isStopping = false;
-      isSpinning = false;
-      spinButton.textContent = "Spin";
-      const winner = getWinner(); // 당첨자 결정
-      displayWinner(winner); // 당첨자 표시
-    }
-
     angle += spinSpeed; // 회전 각도 증가
     if (isStopping) {
       spinButton.disabled = true;
@@ -211,12 +201,14 @@ document.addEventListener("DOMContentLoaded", () => {
       isStopping = false;
       spinSpeed = 100;
 
-      spinButton.textContent = "Stop";
+      spinButton.classList.toggle("btn-danger");
+      spinButton.querySelector("span").textContent = "Stop";
       requestAnimationFrame(spinRoulette);
     } else {
       isStopping = true; // 스핀 멈추기 시작
       isSpinning = false;
-      spinButton.textContent = "Spin";
+      spinButton.classList.toggle("btn-danger");
+      spinButton.querySelector("span").innerText = "Spin";
     }
   });
   // 엔터키 이벤트 추가
@@ -251,45 +243,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
   tech_7_member.forEach((name) => {
     const userBtn = `
-        <div>
-          <input type="checkbox" id="${name}" class="tech7" />
-          <label for="${name}">
-            <span>${name}</span>
-            <span class="${name} ratio">1</span>
-          </label>
-          <button class="plus btn btn-primary btn-sm">+</button>
-          <button class="minus btn btn-outline-primary btn-sm">-</button>
-        </div>
+        <tr>
+          <th scope="row"><input type="checkbox" id="${name}" class="tech7" /></th>
+          <td>
+            <label for="${name}">
+              <span>${name}</span>
+            </label>
+          </td>
+          <td><span class="${name} ratio">1</span></td>
+          <td>
+            <button class="plus btn btn-primary btn-sm">+</button>
+            <button class="minus btn btn-outline-primary btn-sm">-</button>
+          </td>
+        </tr>
       `;
     tech_7_member_DOM.innerHTML += userBtn;
   });
 
+  // 가중치 더하기
   document.querySelectorAll(".plus").forEach((element) => {
     element.addEventListener("click", (e) => {
-      const label = e.target.closest("div").querySelector("label");
-      const inputElement = label.previousElementSibling;
-      const ratioElement = label.querySelector(".ratio");
+      const weight = e.target.closest("td").previousElementSibling;
+      const inputElement = e.target.closest("tr").querySelector(".tech7");
+      const ratioElement = weight.querySelector(".ratio");
 
       let currentRatio = parseFloat(ratioElement.innerText, 10);
       currentRatio = Math.min(currentRatio + 0.1, 10).toFixed(1); // 최댓값은 10으로 설정
       ratioElement.innerText = currentRatio.toString();
 
-      removeParticipant(label.htmlFor);
+      removeParticipant(inputElement.id);
       inputElement.checked = false;
     });
   });
 
   document.querySelectorAll(".minus").forEach((element) => {
     element.addEventListener("click", (e) => {
-      const label = e.target.closest("div").querySelector("label");
-      const inputElement = label.previousElementSibling;
-      const ratioElement = label.querySelector(".ratio");
+      const weight = e.target.closest("td").previousElementSibling;
+      const inputElement = e.target.closest("tr").querySelector(".tech7");
+      const ratioElement = weight.querySelector(".ratio");
 
       let currentRatio = parseFloat(ratioElement.innerText, 10);
       currentRatio = Math.max(currentRatio - 0.1, 1).toFixed(1); // 최소값은 1으로 설정
       ratioElement.innerText = currentRatio.toString();
 
-      removeParticipant(label.htmlFor);
+      removeParticipant(inputElement.id);
       inputElement.checked = false;
     });
   });
@@ -299,6 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     memberDOM.addEventListener("click", (e) => {
       const memberRatioDOM = document.querySelector(`.${member}.ratio`);
+      console.log(memberRatioDOM);
 
       // 체크되어 있는 멤버면 추가
       e.target.checked
@@ -328,15 +326,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // window.alert(`당첨자: ${winnerName}`);
     const winnerHtml = document.querySelector(".target-modal-body");
     winnerHtml.innerHTML = "";
-    winnerHtml.innerHTML = winnerName;
+    winnerHtml.innerHTML = `
+      <img src="./congratulation.png" class="target-modal-body-background"/>
+      <div class="target-modal-body-text font-weight-bold text-center">${winnerName}님! <br/> 커피 감사합니다! ☕</div>
+    `;
 
     targetModal.click();
   };
 
-  selectorAllCheckbox.addEventListener("click", () => {
-    const tech7AllMemberDOM = document.querySelectorAll("input.tech7");
+  // 전체 선택 버튼 클릭
+  selectorAllButton.addEventListener("click", () => {
+    const tech7AllMemberDOM = document.querySelectorAll(".tech7");
 
-    if (selectorAllCheckbox.checked) {
+    isSelectorAllClicked = !isSelectorAllClicked;
+
+    if (isSelectorAllClicked) {
       tech7AllMemberDOM.forEach((input) => {
         input.checked = true;
 
@@ -356,4 +360,20 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   });
+
+  const initRoulette = () => {
+    const tech7AllMemberDOM = document.querySelectorAll(".tech7");
+    tech7AllMemberDOM.forEach((input) => {
+      input.checked = true;
+
+      const member = input.id;
+
+      const memberRatioDOM = document.querySelector(
+        `.${member}.ratio`
+      ).innerText;
+      addParticipant(member, parseFloat(memberRatioDOM));
+    });
+  };
+
+  initRoulette();
 });

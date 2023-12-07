@@ -1,3 +1,16 @@
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  font-family: "Pretendard";
+  font-weight: 600;
+}
+
 #roulette-container {
   display: flex;
   justify-content: center;
@@ -27,10 +40,37 @@
   background: url("./triangle.svg") center/contain no-repeat;
 }
 
-#spin,/* #reset {
-  box-sizing: border-box;
-  display: block;
-  margin: 20px auto;
+[type="checkbox"].tech7 {
+  width: 20px;
+  height: 20px;
+}
+
+.spin-icon {
+  fill: #fff;
+}
+
+.target-modal-body {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.target-modal-body-background {
+  width: 400px;
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.target-modal-body-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.3); /* 흐림 정도 10px, 검은색(rgba(0, 0, 0, 0.3))의 그림자 */
   padding: 10px 20px;
-  font-size: 20px;
-} */;
+  border-radius: 5px;
+  transform: translate(-50%, -50%);
+}
