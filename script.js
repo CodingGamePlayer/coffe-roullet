@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     angle += spinSpeed; // 회전 각도 증가
     if (isStopping) {
       spinButton.disabled = true;
-      spinSpeed *= Math.random() * (0.975 - 0.97) + 0.97;
+      spinSpeed *= Math.random() * (0.995 - 0.99) + 0.99;
 
       if (spinSpeed <= 0.001) {
         const winner = getWinner(); // 당첨자 결정

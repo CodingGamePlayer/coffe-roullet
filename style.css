@@ -37,6 +37,9 @@
   font-size: 30px;
   width: 30px;
   height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   /* transform: rotate(30deg);
   background: url("./imgs/triangle.svg") center/contain no-repeat; */
 }
