@@ -166,61 +166,22 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.restore();
   };
 
-  const getCurrentRouletteSection = (currentAngle) => {
-    // 참여자의 weight 합을 구함
-    const totalWeight = participants.reduce((acc, p) => acc + p.weight, 0);
-    // console.log("totalWeight: ", totalWeight);
-
-    // 현재 각도를 0에서 2π 사이로 변환
-    currentAngle =
-      ((currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-
-    let startAngle = Math.PI / 2;
-
-    for (let i = participants.length - 1; i >= 0; i--) {
-      // 각 참여자의 weight 비율을 이용하여 섹션의 크기를 동적으로 조정
-      const sectionAngle = (2 * Math.PI * participants[i].weight) / totalWeight;
-      const endAngle = startAngle + sectionAngle;
-
-      // 현재 각도가 현재 섹션에 속하는지 확인
-      if (currentAngle >= startAngle && currentAngle < endAngle) {
-        // console.log(currentAngle, startAngle, endAngle);
-        // console.log(participants[i]);
-        // console.log(participants);
-        return i; // 섹션 인덱스 반환
-      }
-
-      startAngle = endAngle;
-    }
-
-    if (currentAngle >= startAngle || currentAngle < Math.PI / 2) {
-      console.log(currentAngle, startAngle, Math.PI / 2);
-      console.log(participants[0]);
-      console.log(participants);
-      return 0; // 첫 번째 섹션 인덱스 반환
-    }
-
-    return null; // 섹션을 찾지 못한 경우
-  };
-
   const spinRoulette = () => {
     if (isStopping && spinSpeed <= 0) {
       isStopping = false;
-      isSpinning = false; // 스핀을 다시 시작할 수 있도록 상태 변경
+      isSpinning = false;
       spinButton.textContent = "Spin";
+      const winner = getWinner(); // 당첨자 결정
+      displayWinner(winner); // 당첨자 표시
     }
 
-    angle += spinSpeed; // 현재 속도로 회전
-
-    // 멈추기 시작했을 때만 속도 감소
+    angle += spinSpeed; // 회전 각도 증가
     if (isStopping) {
       spinButton.disabled = true;
       spinSpeed *= Math.random() * (0.975 - 0.97) + 0.97;
 
       if (spinSpeed <= 0.001) {
         console.log("finished");
-        const currentSection = getCurrentRouletteSection(angle);
-        console.log(currentSection);
 
         const winner = getWinner(); // 당첨자 결정
         displayWinner(winner); // 당첨자 표시
@@ -232,10 +193,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       resetButton.style.display = "flex";
-    }
 
+    }
     updateRoulette();
-    animationFrameId = requestAnimationFrame(spinRoulette);
+    requestAnimationFrame(spinRoulette);
   };
 
   spinButton.addEventListener("click", () => {
@@ -389,4 +350,5 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   });
+
 });
