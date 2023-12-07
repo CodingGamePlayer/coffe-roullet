@@ -10,22 +10,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const targetModal = document.querySelector("#target-modal");
 
   const pastelColors = [
-    "#FFD1DC", // 분홍색 (Pastel Pink)
-    "#E3D7FD", // 연한 라일락색 (Light Lilac)
-    "#FFD8B1", // 살구색 (Apricot)
-    "#B0E57C", // 연한 민트색 (Light Mint)
-    "#DCB4E6", // 연한 라벤더색 (Light Lavender)
-    "#AEEEEE", // 연한 터콰이즈색 (Light Turquoise)
-    "#FFFFE0", // 연한 노란색 (Light Yellow)
-    "#ADD8E6", // 연한 파란색 (Light Blue)
-    "#FFDAB9", // 연한 오렌지색 (Light Orange)
-    "#D3FFCE", // 연한 연두색 (Light Lime)
-    "#BDFCC9", // 연한 라임색 (Light Lime Green)
-    "#C9A0DC", // 연한 퍼플색 (Light Purple)
-    "#E0FFFF", // 연한 푸른색 (Light Cyan)
-    "#F08080", // 연한 코랄색 (Light Coral)
-    "#FFD700", // 연한 샤베트색 (Light Sherbet)
-    "#F5F5DC", // 연한 베이지색 (Light Beige)
+    "#FFB6C1", // 분홍색 (LightPink)
+    "#00CED1", // 청록색 (DarkTurquoise)
+    "#FFD700", // 살구색 (Gold)
+    "#98FB98", // 연한 민트색 (PaleGreen)
+    "#DDA0DD", // 연한 라벤더색 (Lavender)
+    "#20B2AA", // 연한 터콰이즈색 (LightSeaGreen)
+    "#FFFACD", // 연한 노란색 (LemonChiffon)
+    "#87CEEB", // 연한 파란색 (SkyBlue)
+    "#FFA07A", // 연한 오렌지색 (LightSalmon)
+    "#ADFF2F", // 연한 연두색 (GreenYellow)
+    "#8FBC8F", // 연한 라임색 (DarkSeaGreen)
+    "#9370DB", // 연한 퍼플색 (MediumPurple)
+    "#00FA9A", // 연한 푸른색 (MediumSpringGreen)
+    "#FF6347", // 연한 코랄색 (Tomato)
+    "#FFDAB9", // 연한 샤베트색 (PeachPuff)
+    "#FFE4C4", // 연한 베이지색 (Bisque)
   ];
 
   let roulettes = [];
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let isSpinning = false;
   let isStopping = false; // 스핀 멈추기 시작했는지 표시하는 변수
   let animationFrameId;
-  let selectedColors = [];
+  let selectedColors = Array(16).fill(0);
   let isSelectorAllClicked = false;
 
   const tech_7_member = [
@@ -72,6 +72,12 @@ document.addEventListener("DOMContentLoaded", () => {
       addParticipant(member, tech_7_member_Weights[idx])
     );
   });
+  const colorSet = new Set();
+
+  while (colorSet.size < tech_7_member.length) {
+    let getColorIdx = Math.floor(Math.random() * 16);
+    colorSet.add(getColorIdx);
+  }
 
   // 참여자 추가하기
   const addParticipant = (name, weight) => {
@@ -86,19 +92,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const existingParticipant = participants.find((p) => p.name === name);
 
     if (existingParticipant) {
-      // If the participant already exists, use their existing color
+      // 사용자가 존재하면, 기존 색상 추가하기
       colors.push(existingParticipant.color);
     } else {
-      // If it's a new participant, assign a random color
+      // 새로운 사용자라면, 새로운 색상 추가하기
 
-      // while (selectedColors[getColorIdx] !== 1) {}
-      const getColorIdx = Math.floor(Math.random()) * 16;
-
-      if (selectedColors[getColorIdx] === 1) {
+      for (let index of colorSet) {
+        const randomColor = pastelColors[index];
+        colors.push(randomColor);
       }
-      selectedColors[getColorIdx] = 1;
-      const randomColor = pastelColors[Math.floor(Math.random() * 16)];
-      colors.push(randomColor);
+      // console.log(getColorIdx);
+
+      // while (selectedColors[getColorIdx] === 1) {
+      //   getColorIdx = Math.floor(Math.random() * 16);
+      //   console.log(getColorIdx);
+      // }
+
+      // selectedColors[getColorIdx] = 1;
     }
 
     participants.push({ name, weight, color: colors[colors.length - 1] });
@@ -165,6 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.fillStyle = "#000000"; // 텍스트 색상
       ctx.font = "14px Arial"; // 텍스트 폰트
       ctx.fillText(participant.name, canvas.width / 2 - 10, 0); // 텍스트 위치 조정
+      ctx.imageSmoothingEnabled = false; // 안티엘리어싱 해제
       ctx.restore();
 
       startAngle = endAngle;
@@ -190,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
       spinSpeed *= Math.random() * (0.975 - 0.97) + 0.97;
 
       if (spinSpeed <= 0.001) {
-        console.log("finished");
+        // console.log("finished");
 
         const winner = getWinner(); // 당첨자 결정
         displayWinner(winner); // 당첨자 표시

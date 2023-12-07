@@ -31,14 +31,14 @@
 }
 
 #roulette-container::after {
-  content: "";
-  position: absolute;
-  right: -30px;
+  content: "◀";
+  /* position: absolute; */
+  /* right: -10vw; */
   font-size: 30px;
   width: 30px;
   height: 30px;
-  transform: rotate(30deg);
-  background: url("./imgs/triangle.svg") center/contain no-repeat;
+  /* transform: rotate(30deg);
+  background: url("./imgs/triangle.svg") center/contain no-repeat; */
 }
 
 [type="checkbox"].tech7 {
