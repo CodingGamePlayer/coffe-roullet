@@ -2,6 +2,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  width: 500px;
   height: 500px;
 }
 
@@ -11,17 +13,17 @@
 }
 #participant-container {
   text-align: center;
-  position: relative;
   margin-bottom: 20px;
 }
 
 #roulette-container::after {
   content: "";
   position: absolute;
-  top: 410px;
+  right: 50px;
   font-size: 30px;
   width: 30px;
   height: 30px;
+  transform: rotate(30deg);
   background: url("./triangle.svg") center/contain no-repeat;
 }
 

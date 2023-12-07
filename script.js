@@ -6,15 +6,36 @@ document.addEventListener("DOMContentLoaded", () => {
   // const participantWeightInput = document.getElementById("participant-weight");
   // const addParticipantButton = document.getElementById("add-participant");
   const resetButton = document.querySelector("#reset");
+  const selectorAllCheckbox = document.querySelector("#select-all");
+
+  const pastelColors = [
+    "#FFD1DC", // 분홍색 (Pastel Pink)
+    "#E3D7FD", // 연한 라일락색 (Light Lilac)
+    "#FFD8B1", // 살구색 (Apricot)
+    "#B0E57C", // 연한 민트색 (Light Mint)
+    "#DCB4E6", // 연한 라벤더색 (Light Lavender)
+    "#AEEEEE", // 연한 터콰이즈색 (Light Turquoise)
+    "#FFFFE0", // 연한 노란색 (Light Yellow)
+    "#ADD8E6", // 연한 파란색 (Light Blue)
+    "#FFDAB9", // 연한 오렌지색 (Light Orange)
+    "#D3FFCE", // 연한 연두색 (Light Lime)
+    "#BDFCC9", // 연한 라임색 (Light Lime Green)
+    "#C9A0DC", // 연한 퍼플색 (Light Purple)
+    "#E0FFFF", // 연한 푸른색 (Light Cyan)
+    "#F08080", // 연한 코랄색 (Light Coral)
+    "#FFD700", // 연한 샤베트색 (Light Sherbet)
+    "#F5F5DC", // 연한 베이지색 (Light Beige)
+  ];
 
   let roulettes = [];
   let participants = [];
   let colors = [];
   let angle = 0;
-  let spinSpeed = 1000; // 회전 속도 변수
+  let spinSpeed = 100; // 회전 속도 변수
   let isSpinning = false;
   let isStopping = false; // 스핀 멈추기 시작했는지 표시하는 변수
   let animationFrameId;
+  let selectedColors = [];
 
   const tech_7_member = [
     "공영균",
@@ -42,14 +63,21 @@ document.addEventListener("DOMContentLoaded", () => {
       colors.push(existingParticipant.color);
     } else {
       // If it's a new participant, assign a random color
+
+      // while (selectedColors[getColorIdx] !== 1) {}
+      const getColorIdx = Math.floor(Math.random()) * 16;
+
+      if (selectedColors[getColorIdx] === 1) {
+      }
+      selectedColors[getColorIdx] = 1;
       const randomColor =
-        "#" + Math.floor(Math.random() * 16777215).toString(16);
+        // "#" + Math.floor(Math.random() * 16777215).toString(16);
+        pastelColors[Math.floor(Math.random() * 16)];
       colors.push(randomColor);
     }
 
     participants.push({ name, weight, color: colors[colors.length - 1] });
 
-    console.log(participants);
     drawRoulette(name);
   };
 
@@ -85,7 +113,9 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const drawRoulette = (name) => {
-    if (participants.length === 0) return;
+    if (participants.length === 0) {
+      return;
+    }
 
     const totalWeight = participants.reduce((acc, p) => acc + p.weight, 0);
     let startAngle = 0;
@@ -139,14 +169,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const getCurrentRouletteSection = (currentAngle) => {
     // 참여자의 weight 합을 구함
     const totalWeight = participants.reduce((acc, p) => acc + p.weight, 0);
-    console.log("totalWeight: ", totalWeight);
+    // console.log("totalWeight: ", totalWeight);
 
     // 현재 각도를 0에서 2π 사이로 변환
     currentAngle =
       ((currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
     let startAngle = Math.PI / 2;
-    console.log(currentAngle);
 
     for (let i = participants.length - 1; i >= 0; i--) {
       // 각 참여자의 weight 비율을 이용하여 섹션의 크기를 동적으로 조정
@@ -155,9 +184,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // 현재 각도가 현재 섹션에 속하는지 확인
       if (currentAngle >= startAngle && currentAngle < endAngle) {
-        console.log(currentAngle, startAngle, endAngle);
-        console.log(participants[i]);
-        console.log(participants);
+        // console.log(currentAngle, startAngle, endAngle);
+        // console.log(participants[i]);
+        // console.log(participants);
         return i; // 섹션 인덱스 반환
       }
 
@@ -186,19 +215,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // 멈추기 시작했을 때만 속도 감소
     if (isStopping) {
       spinButton.disabled = true;
-      spinSpeed *= Math.random() * (0.98 - 0.975) + 0.975; // 0.98에서 0.975 사이의 랜덤 감소 속도
+      spinSpeed *= Math.random() * (0.975 - 0.97) + 0.97;
 
-      console.log(getCurrentRouletteSection(angle));
       if (spinSpeed <= 0.001) {
         console.log("finished");
         const currentSection = getCurrentRouletteSection(angle);
+        console.log(currentSection);
 
-        if (currentSection !== null) {
-          const winnerName = participants[currentSection].name;
-          alert(`Winner: ${winnerName}`);
-        } else {
-          alert("No winner found"); // 예외 처리: 섹션을 찾을 수 없을 경우
-        }
+        const winner = getWinner(); // 당첨자 결정
+        displayWinner(winner); // 당첨자 표시
 
         spinButton.disabled = false;
         isSpinning = false;
@@ -214,10 +239,15 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   spinButton.addEventListener("click", () => {
+    if (participants.length === 0) {
+      alert("참여자가 없습니다!");
+      return;
+    }
+
     if (!isSpinning) {
       isSpinning = true;
       isStopping = false;
-      spinSpeed = 1000; // 현재 속도로 초기화 또는 적절한 값으로 설정
+      spinSpeed = 100;
 
       spinButton.textContent = "Stop";
       requestAnimationFrame(spinRoulette);
@@ -260,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
   tech_7_member.forEach((name) => {
     const userBtn = `
         <div>
-          <input type="checkbox" id="${name}" />
+          <input type="checkbox" id="${name}" class="tech7" />
           <label for="${name}">
             <span>${name}</span>
             <span class="${name} ratio">1</span>
@@ -278,8 +308,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const inputElement = label.previousElementSibling;
       const ratioElement = label.querySelector(".ratio");
 
-      let currentRatio = parseInt(ratioElement.innerText, 10);
-      currentRatio = Math.min(currentRatio + 1, 10); // 최댓값은 10으로 설정
+      let currentRatio = parseFloat(ratioElement.innerText, 10);
+      currentRatio = Math.min(currentRatio + 0.1, 10).toFixed(1); // 최댓값은 10으로 설정
       ratioElement.innerText = currentRatio.toString();
 
       removeParticipant(label.htmlFor);
@@ -293,8 +323,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const inputElement = label.previousElementSibling;
       const ratioElement = label.querySelector(".ratio");
 
-      let currentRatio = parseInt(ratioElement.innerText, 10);
-      currentRatio = Math.max(currentRatio - 1, 1); // 최소값은 1으로 설정
+      let currentRatio = parseFloat(ratioElement.innerText, 10);
+      currentRatio = Math.max(currentRatio - 0.1, 1).toFixed(1); // 최소값은 1으로 설정
       ratioElement.innerText = currentRatio.toString();
 
       removeParticipant(label.htmlFor);
@@ -308,9 +338,55 @@ document.addEventListener("DOMContentLoaded", () => {
     memberDOM.addEventListener("click", (e) => {
       const memberRatioDOM = document.querySelector(`.${member}.ratio`);
 
+      // 체크되어 있는 멤버면 추가
       e.target.checked
         ? addParticipant(e.target.id, parseFloat(memberRatioDOM.innerText))
         : removeParticipant(e.target.id);
     });
+  });
+
+  const getWinner = () => {
+    const adjustedAngle =
+      (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI); // 각도를 0에서 2π 사이 값으로 조정
+    let cumulativeAngle = 0;
+    const totalWeight = participants.reduce((acc, p) => acc + p.weight, 0);
+
+    // 각 참여자에 대해
+    for (const participant of participants) {
+      const sliceAngle = (participant.weight / totalWeight) * 2 * Math.PI;
+      cumulativeAngle += sliceAngle;
+      if (adjustedAngle <= cumulativeAngle) {
+        return participant.name; // 당첨된 참여자 반환
+      }
+    }
+  };
+
+  const displayWinner = (winnerName) => {
+    // 당첨된 유저를 표시하는 코드 (예: 알림, DOM 요소 변경 등)
+    window.alert(`당첨자: ${winnerName}`);
+  };
+
+  selectorAllCheckbox.addEventListener("click", () => {
+    const tech7AllMemberDOM = document.querySelectorAll("input.tech7");
+
+    if (selectorAllCheckbox.checked) {
+      tech7AllMemberDOM.forEach((input) => {
+        input.checked = true;
+
+        const member = input.id;
+
+        const memberRatioDOM = document.querySelector(
+          `.${member}.ratio`
+        ).innerText;
+        addParticipant(member, parseFloat(memberRatioDOM));
+      });
+    } else {
+      tech7AllMemberDOM.forEach((input) => {
+        input.checked = false;
+
+        const member = input.id;
+        removeParticipant(member);
+      });
+    }
   });
 });
