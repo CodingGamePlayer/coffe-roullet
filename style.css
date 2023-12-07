@@ -38,7 +38,7 @@
   width: 30px;
   height: 30px;
   transform: rotate(30deg);
-  background: url("./triangle.svg") center/contain no-repeat;
+  background: url("./imgs/triangle.svg") center/contain no-repeat;
 }
 
 [type="checkbox"].tech7 {

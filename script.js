@@ -49,6 +49,16 @@ document.addEventListener("DOMContentLoaded", () => {
     "우창욱",
   ];
 
+  const tech_7_member_profileImg = [
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+  ];
+
   const addParticipant = (name, weight) => {
     if (
       name.trim() === "" ||
@@ -241,12 +251,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const tech_7_member_DOM = document.querySelector(".tech7-users");
 
-  tech_7_member.forEach((name) => {
+  tech_7_member.forEach((name, idx) => {
     const userBtn = `
         <tr>
           <th scope="row"><input type="checkbox" id="${name}" class="tech7" /></th>
           <td>
             <label for="${name}">
+              <img src="./imgs/${
+                tech_7_member_profileImg[idx] ? name : "default-user"
+              }.png" width="20px" height="20px"/>
               <span>${name}</span>
             </label>
           </td>
@@ -327,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const winnerHtml = document.querySelector(".target-modal-body");
     winnerHtml.innerHTML = "";
     winnerHtml.innerHTML = `
-      <img src="./congratulation.png" class="target-modal-body-background"/>
+      <img src="./imgs/congratulation.png" class="target-modal-body-background"/>
       <div class="target-modal-body-text font-weight-bold text-center">${winnerName}님! <br/> 커피 감사합니다! ☕</div>
     `;
 
