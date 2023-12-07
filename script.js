@@ -32,11 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let participants = [];
   let colors = [];
   let angle = 0;
-  let spinSpeed = 100; // 회전 속도 변수
+  let spinSpeed = 0; // 회전 속도 변수
   let isSpinning = false;
   let isStopping = false; // 스핀 멈추기 시작했는지 표시하는 변수
   let animationFrameId;
-  let selectedColors = Array(16).fill(0);
   let isSelectorAllClicked = false;
 
   const tech_7_member = [
@@ -201,8 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
       spinSpeed *= Math.random() * (0.975 - 0.97) + 0.97;
 
       if (spinSpeed <= 0.001) {
-        // console.log("finished");
-
         const winner = getWinner(); // 당첨자 결정
         displayWinner(winner); // 당첨자 표시
 
@@ -226,11 +223,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isSpinning) {
       isSpinning = true;
       isStopping = false;
-      spinSpeed = 100;
+      spinSpeed = 0.4;
 
       spinButton.classList.toggle("btn-danger");
       spinButton.querySelector("span").textContent = "Stop";
-      requestAnimationFrame(spinRoulette);
+      spinRoulette();
     } else {
       isStopping = true; // 스핀 멈추기 시작
       isSpinning = false;
