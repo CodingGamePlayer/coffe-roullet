@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "김동환",
     "우창욱",
   ];
-  const tech_7_member_Weights = [1, 1, 1, 1, 1, 1, 1];
+  const tech_7_member_Weights = [1.5, 1, 1, 1.3, 1, 1, 1];
 
   const tech_7_member_profileImg = [
     true,
@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
       addParticipant(member, tech_7_member_Weights[idx])
     );
   });
+
   const colorSet = new Set();
 
   while (colorSet.size < tech_7_member.length) {
