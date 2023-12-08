@@ -63,13 +63,18 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("tech-7-member-selection")
   );
 
-  // Add an event listener for the hidden.bs.modal event
   participantModal._element.addEventListener("hidden.bs.modal", function () {
-    // Execute your logic here when the participant selection modal is closed
-    participants.forEach((member) => removeParticipant(member));
-    participants.forEach((member, idx) =>
-      addParticipant(member, tech_7_member_Weights[idx])
-    );
+    tech_7_member.forEach((member) => removeParticipant(member));
+    const tech7AllMemberDOM = document.querySelectorAll(".tech7");
+    tech7AllMemberDOM.forEach((input) => {
+      if (input.checked) {
+        const memberRatioDOM = document.querySelector(
+          `.${input.id}.ratio`
+        ).innerText;
+
+        addParticipant(input.id, parseFloat(memberRatioDOM));
+      }
+    });
   });
 
   const colorSet = new Set();
@@ -101,14 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const randomColor = pastelColors[index];
         colors.push(randomColor);
       }
-      // console.log(getColorIdx);
-
-      // while (selectedColors[getColorIdx] === 1) {
-      //   getColorIdx = Math.floor(Math.random() * 16);
-      //   console.log(getColorIdx);
-      // }
-
-      // selectedColors[getColorIdx] = 1;
     }
 
     participants.push({ name, weight, color: colors[colors.length - 1] });
@@ -122,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (index !== -1) {
       const removedParticipant = participants.splice(index, 1)[0];
-      const removedColor = removedParticipant.color;
 
       const res = roulettes.find((roulette) => roulette.name === name);
       if (res) {
@@ -133,9 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // Redraw the roulette without the removed participant
         drawRoulette();
       }
-
-      // Reuse the removed color for future participants
-      colors.push(removedColor);
     }
   };
 
