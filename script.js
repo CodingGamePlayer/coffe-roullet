@@ -66,8 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Add an event listener for the hidden.bs.modal event
   participantModal._element.addEventListener("hidden.bs.modal", function () {
     // Execute your logic here when the participant selection modal is closed
-    tech_7_member.forEach((member) => removeParticipant(member));
-    tech_7_member.forEach((member, idx) =>
+    participants.forEach((member) => removeParticipant(member));
+    participants.forEach((member, idx) =>
       addParticipant(member, tech_7_member_Weights[idx])
     );
   });
